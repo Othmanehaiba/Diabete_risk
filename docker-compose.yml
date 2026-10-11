@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # Service API FastAPI
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: diabetes_mlops_api
+    command: uvicorn src.api:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  # Service Frontend Streamlit
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: diabetes_mlops_frontend
+    command: streamlit run src/app.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8502:8501"
+    volumes:
+      - .:/app
+    depends_on:
+      - api
+    environment:
+      - API_URL=http://api:8000/predict
+
+  # Service Tracking MLflow UI
+  mlflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: diabetes_mlops_mlflow
+    command: mlflow ui --backend-store-uri sqlite:///mlflow.db --host 0.0.0.0 --port 5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+
+  # Service Orchestrateur Apache Airflow
+  airflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: diabetes_mlops_airflow
+    command: >
+      bash -c "airflow db init &&
+               airflow users create --username admin --firstname Othmane --lastname Haiba --role Admin --email admin@example.com --password admin &&
+               airflow standalone"
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - ./dags:/root/airflow/dags
+    environment:
+      - AIRFLOW__CORE__DAGS_FOLDER=/app/dags
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - api
+      - mlflow

@@ -1,0 +1,60 @@
+.venv/
+venv/
+env/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+__pycache__/
+*.py[cod]
+*$py.class
+
+mlruns/
+mlflow.db
+mlflow.db-journal
+.mlflow/
+
+airflow.db
+airflow.cfg
+airflow-webserver.pid
+standalone_admin_password.txt
+logs/
+dags/__pycache__/
+
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# Environment Variables & Secrets
+# ==========================================
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# ==========================================
+# Models & Heavy Datasets (Optionnel)
+# ==========================================
+# Conserver le dossier data/processed mais ignorer les gros fichiers bruts si nécessaire
+# data/raw/*
